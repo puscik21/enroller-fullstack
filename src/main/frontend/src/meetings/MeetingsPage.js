@@ -2,7 +2,6 @@ import {useState, useEffect} from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
 
-
 export default function MeetingsPage({username}) {
     const [meetings, setMeetings] = useState([]);
     const [addingNewMeeting, setAddingNewMeeting] = useState(false);
@@ -19,22 +18,36 @@ export default function MeetingsPage({username}) {
     }, []);
 
     async function handleNewMeeting(meeting) {
-     const response = await fetch('/api/meetings', {
-         method: 'POST',
-         body: JSON.stringify(meeting),
-         headers: { 'Content-Type': 'application/json' }
-     });
-     if (response.ok) {
-         const nextMeetings = [...meetings, meeting];
-         setMeetings(nextMeetings);
-         setAddingNewMeeting(false);
-     }
+        const response = await fetch('/api/meetings', {
+            method: 'POST',
+            body: JSON.stringify(meeting),
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (response.ok) {
+            const addedMeeting = await response.json(); // ← użyj obiektu z ID!
+            const nextMeetings = [...meetings, addedMeeting];
+            setMeetings(nextMeetings);
+            setAddingNewMeeting(false);
+        }
     }
 
-    function handleDeleteMeeting(meeting) {
-        const nextMeetings = meetings.filter(m => m !== meeting);
-        setMeetings(nextMeetings);
+
+    async function handleDeleteMeeting(meeting) {
+        console.log("Usuwam spotkanie o id:", meeting.id);
+        const response = await fetch(`/api/meetings/${meeting.id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            const nextMeetings = meetings.filter(m => m.id !== meeting.id);
+            setMeetings(nextMeetings);
+        } else {
+            const text = await response.text();
+            console.error('Błąd przy usuwaniu:', response.status, text);
+            alert(`Nie udało się usunąć spotkania (${response.status})`);
+        }
     }
+
 
     return (
         <div>
@@ -48,5 +61,5 @@ export default function MeetingsPage({username}) {
                 <MeetingsList meetings={meetings} username={username}
                               onDelete={handleDeleteMeeting}/>}
         </div>
-    )
+    );
 }
