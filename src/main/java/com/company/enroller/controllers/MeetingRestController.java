@@ -52,9 +52,13 @@ public class MeetingRestController {
         if (meeting == null) {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+        if (!meeting.getParticipants().isEmpty()) {
+            return new ResponseEntity<>("Cannot delete meeting with participants", HttpStatus.CONFLICT);
+        }
         meetingService.delete(meeting);
         return new ResponseEntity<Meeting>(meeting, HttpStatus.NO_CONTENT);
     }
+
 
     @RequestMapping(value = "", method = RequestMethod.POST)
     public ResponseEntity<?> addMeeting(@RequestBody Meeting meeting) {
@@ -76,4 +80,33 @@ public class MeetingRestController {
         meetingService.update(meeting);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PostMapping("/{id}/participants/{login}")
+    public ResponseEntity<?> addParticipant(@PathVariable("id") long id, @PathVariable("login") String login) {
+        Meeting meeting = meetingService.findById(id);
+        Participant participant = participantService.findByLogin(login);
+        if (meeting == null || participant == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (!meeting.getParticipants().contains(participant)) {
+            meeting.addParticipant(participant);
+            meetingService.update(meeting);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}/participants/{login}")
+    public ResponseEntity<?> removeParticipant(@PathVariable("id") long id, @PathVariable("login") String login) {
+        Meeting meeting = meetingService.findById(id);
+        Participant participant = participantService.findByLogin(login);
+        if (meeting == null || participant == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        if (meeting.getParticipants().contains(participant)) {
+            meeting.removeParticipant(participant);
+            meetingService.update(meeting);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

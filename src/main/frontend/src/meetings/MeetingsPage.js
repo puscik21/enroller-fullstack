@@ -1,21 +1,22 @@
-import {useState, useEffect} from "react";
+import { useState, useEffect } from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
 
-export default function MeetingsPage({username}) {
+export default function MeetingsPage({ username }) {
     const [meetings, setMeetings] = useState([]);
     const [addingNewMeeting, setAddingNewMeeting] = useState(false);
 
     useEffect(() => {
-        const fetchMeetings = async () => {
-            const response = await fetch(`/api/meetings`);
-            if (response.ok) {
-                const meetings = await response.json();
-                setMeetings(meetings);
-            }
-        };
         fetchMeetings();
     }, []);
+
+    async function fetchMeetings() {
+        const response = await fetch(`/api/meetings`);
+        if (response.ok) {
+            const meetings = await response.json();
+            setMeetings(meetings);
+        }
+    }
 
     async function handleNewMeeting(meeting) {
         const response = await fetch('/api/meetings', {
@@ -24,13 +25,12 @@ export default function MeetingsPage({username}) {
             headers: { 'Content-Type': 'application/json' }
         });
         if (response.ok) {
-            const addedMeeting = await response.json(); // ← użyj obiektu z ID!
+            const addedMeeting = await response.json();
             const nextMeetings = [...meetings, addedMeeting];
             setMeetings(nextMeetings);
             setAddingNewMeeting(false);
         }
     }
-
 
     async function handleDeleteMeeting(meeting) {
         console.log("Usuwam spotkanie o id:", meeting.id);
@@ -44,22 +44,25 @@ export default function MeetingsPage({username}) {
         } else {
             const text = await response.text();
             console.error('Błąd przy usuwaniu:', response.status, text);
-            alert(`Nie udało się usunąć spotkania (${response.status})`);
+            alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
         }
     }
-
 
     return (
         <div>
             <h2>Zajęcia ({meetings.length})</h2>
             {
                 addingNewMeeting
-                    ? <NewMeetingForm onSubmit={(meeting) => handleNewMeeting(meeting)}/>
+                    ? <NewMeetingForm onSubmit={handleNewMeeting} />
                     : <button onClick={() => setAddingNewMeeting(true)}>Dodaj nowe spotkanie</button>
             }
             {meetings.length > 0 &&
-                <MeetingsList meetings={meetings} username={username}
-                              onDelete={handleDeleteMeeting}/>}
+                <MeetingsList
+                    meetings={meetings}
+                    username={username}
+                    onDelete={handleDeleteMeeting}
+                    reloadMeetings={fetchMeetings}
+                />}
         </div>
     );
 }
