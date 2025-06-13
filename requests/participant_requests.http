@@ -19,7 +19,7 @@ POST {{appAddress}}/api/participants
 Content-Type: application/json
 
 {
-  "login": "my_user",
+  "login": "admin",
   "password": "password"
 }
 
