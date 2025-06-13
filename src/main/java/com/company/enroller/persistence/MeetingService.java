@@ -1,70 +1,121 @@
 package com.company.enroller.persistence;
 
+import com.company.enroller.exception.MeetingAlreadyExistsException;
+import com.company.enroller.exception.ObjectNotFoundException;
+import com.company.enroller.exception.ParticipantAlreadyInMeetingException;
+import com.company.enroller.exception.ParticipantNotFoundInMeetingException;
+import com.company.enroller.exception.RemovalOfMeetingsWithParticipantsException;
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
-@Component("meetingService")
+@Service
+@RequiredArgsConstructor
 public class MeetingService {
 
-    Session session;
+    private final Session dbSession;
 
-    public MeetingService() {
-        session = DatabaseConnector.getInstance().getSession();
-    }
+    private final ParticipantService participantService;
 
-    public Collection<Meeting> getAll() {
+    public List<Meeting> getAll() {
         String hql = "FROM Meeting";
-        Query query = this.session.createQuery(hql);
+        org.hibernate.query.Query query = dbSession.createQuery(hql);
         return query.list();
     }
 
-    public Meeting findById(long id) {
-        return this.session.get(Meeting.class, id);
+    public Meeting getById(Long id) {
+        return findById(id).orElseThrow(() -> new ObjectNotFoundException("Meeting with id '%d' not found".formatted(id)));
     }
 
-    public Collection<Meeting> findMeetings(String title, String description, Participant participant, String sortMode) {
+    private Optional<Meeting> findById(long id) {
+        String hql = "From Meeting where id = :id";
+        org.hibernate.query.Query query = dbSession.createQuery(hql);
+        query.setParameter("id", id);
+        return query.getResultStream().findFirst();
+    }
+
+    public List<Meeting> findMeetings(String title, String description, String participantLogin, String sortMode) {
+        Optional<Participant> participant = participantService.findByLogin(participantLogin);
         String hql = "FROM Meeting as meeting WHERE title LIKE :title AND description LIKE :description ";
-        if (participant != null) {
+        if (participant.isPresent()) {
             hql += " AND :participant in elements(participants)";
         }
         if (sortMode.equals("title")) {
             hql += " ORDER BY title";
         }
-        Query query = this.session.createQuery(hql);
+        Query<Meeting> query = dbSession.createQuery(hql, Meeting.class);
         query.setParameter("title", "%" + title + "%").setParameter("description", "%" + description + "%");
-        if (participant != null) {
-            query.setParameter("participant", participant);
-        }
+        participant.ifPresent(value -> query.setParameter("participant", value));
         return query.list();
     }
 
-    public void delete(Meeting meeting) {
-        Transaction transaction = this.session.beginTransaction();
-        this.session.delete(meeting);
+    public void deleteById(Long id) {
+        Meeting meeting = getById(id);
+        if (!meeting.getParticipants().isEmpty()) {
+            throw new RemovalOfMeetingsWithParticipantsException(meeting.getTitle());
+        }
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.delete(meeting);
         transaction.commit();
     }
 
-    public void add(Meeting meeting) {
-        Transaction transaction = this.session.beginTransaction();
-        this.session.save(meeting);
+    public void addParticipant(Long id, String login) {
+        Meeting meeting = getById(id);
+        Participant participant = participantService.getByLogin(login);
+        if (meeting.getParticipants().contains(participant)) {
+            throw new ParticipantAlreadyInMeetingException(id, login);
+        }
+
+        Transaction transaction = dbSession.beginTransaction();
+        meeting.addParticipant(participant);
+        dbSession.merge(meeting);
         transaction.commit();
     }
 
-    public void update(Meeting meeting) {
-        Transaction transaction = this.session.beginTransaction();
-        this.session.merge(meeting);
+    public void deleteParticipant(Long id, String login) {
+        Meeting meeting = getById(id);
+        Participant participant = participantService.getByLogin(login);
+        if (!meeting.getParticipants().contains(participant)) {
+            throw new ParticipantNotFoundInMeetingException(id, login);
+        }
+
+        Transaction transaction = dbSession.beginTransaction();
+        meeting.removeParticipant(participant);
+        dbSession.merge(meeting);
         transaction.commit();
     }
 
-    public boolean alreadyExist(Meeting meeting) {
+    public Meeting add(Meeting meeting) {
+        if (alreadyExist(meeting)) {
+            throw new MeetingAlreadyExistsException(meeting.getTitle());
+        }
+        meeting.setId(null);
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.save(meeting);
+        transaction.commit();
+        return meeting;
+    }
+
+    public Meeting update(Long id, Meeting meeting) {
+        getById(id);
+        meeting.setId(id);
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.merge(meeting);
+        transaction.commit();
+        return meeting;
+    }
+
+    private boolean alreadyExist(Meeting meeting) {
         String hql = "FROM Meeting WHERE title=:title AND date=:date";
-        Query query = this.session.createQuery(hql);
+        Query query = dbSession.createQuery(hql);
         Collection resultList = query.setParameter("title", meeting.getTitle()).setParameter("date", meeting.getDate())
                 .list();
         return query.list().size() != 0;
