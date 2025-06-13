@@ -1,0 +1,47 @@
+### GET /api/meetings
+GET {{appAddress}}/api/meetings
+
+
+### GET /api/meetings/{id}
+GET {{appAddress}}/api/meetings/1
+
+
+### POST /api/meetings
+POST {{appAddress}}/api/meetings
+Content-Type: application/json
+
+{
+  "id": 1,
+  "title": "Talking about everything",
+  "description": "Let's grab a coffee and talking about anything we want",
+  "date": "13-05-2025"
+}
+
+
+### PUT /api/meetings/{id}
+PUT {{appAddress}}/api/meetings/2
+Content-Type: application/json
+
+{
+  "id": 2,
+  "title": "Daily",
+  "description": "Daily meeting",
+  "date": "20-05-2025"
+}
+
+
+### DELETE /api/meetings/{id}
+DELETE {{appAddress}}/api/meetings/4
+
+
+### GET /api/meetings/{id}/participants
+GET {{appAddress}}/api/meetings/1/participants
+
+
+### POST /api/meetings/{id}/participants/{login}
+POST {{appAddress}}/api/meetings/1/participants/my_user
+
+
+### DELETE /api/meetings/{id}/participants/{login}
+DELETE {{appAddress}}/api/meetings/1/participants/my_user
+

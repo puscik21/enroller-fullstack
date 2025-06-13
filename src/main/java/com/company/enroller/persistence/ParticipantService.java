@@ -1,57 +1,79 @@
 package com.company.enroller.persistence;
 
+import com.company.enroller.controllers.utils.SortOrder;
+import com.company.enroller.exception.ObjectNotFoundException;
+import com.company.enroller.exception.ParticipantAlreadyExistsException;
 import com.company.enroller.model.Participant;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
-@Component("participantService")
+@Service
+@RequiredArgsConstructor
 public class ParticipantService {
 
-    DatabaseConnector connector;
+    private final Session dbSession;
 
-    public ParticipantService() {
-        connector = DatabaseConnector.getInstance();
-    }
+    public List<Participant> getAll(String filter, String sortBy, SortOrder sortOrder) {
+        StringBuilder hql = new StringBuilder("FROM Participant");
+        hql = addFilter(hql, filter)
+                .append(" ORDER BY %s %s".formatted(sortBy, sortOrder.toString()));
 
-    public Collection<Participant> getAll(String login, String sortMode, String sortOrder) {
-        String hql = "FROM Participant WHERE login LIKE :login";
-
-        if (sortMode.equals("login")) {
-            hql += " ORDER BY login";
-            if (sortOrder.equals("ASC") || sortOrder.equals("DESC")) {
-                hql += " " + sortOrder;
-            }
+        Query<Participant> query = dbSession.createQuery(hql.toString(), Participant.class);
+        if (StringUtils.hasText(filter)) {
+            query.setParameter("filter", "%" + filter + "%");
         }
-
-        Query query = connector.getSession().createQuery(hql);
-        query.setParameter("login", "%" + login + "%");
         return query.list();
     }
 
-    public Participant findByLogin(String login) {
-        return connector.getSession().get(Participant.class, login);
+    private StringBuilder addFilter(StringBuilder hql, String key) {
+        if (StringUtils.hasText(key)) {
+            hql.append(" WHERE login LIKE :filter");
+        }
+        return hql;
     }
 
-    public Participant add(Participant participant) {
-        Transaction transaction = connector.getSession().beginTransaction();
-        connector.getSession().save(participant);
+    public Participant getByLogin(String login) {
+        return findByLogin(login)
+                .orElseThrow(() -> new ObjectNotFoundException("Participant with login '%s' not found".formatted(login)));
+    }
+
+    public Optional<Participant> findByLogin(String login) {
+        String hql = "FROM Participant WHERE login = :login";
+        Query<Participant> query = dbSession.createQuery(hql, Participant.class);
+        query.setParameter("login", login);
+        return query.getResultStream().findFirst();
+    }
+
+    public Participant register(Participant participant) {
+        if (findByLogin(participant.getLogin()).isPresent()) {
+            throw new ParticipantAlreadyExistsException(participant.getLogin());
+        }
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.save(participant);
         transaction.commit();
         return participant;
     }
 
-    public void update(Participant participant) {
-        Transaction transaction = connector.getSession().beginTransaction();
-        connector.getSession().merge(participant);
+    public Participant update(String login, Participant participant) {
+        getByLogin(login);
+        participant.setLogin(login);
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.merge(participant);
         transaction.commit();
+        return participant;
     }
 
-    public void delete(Participant participant) {
-        Transaction transaction = connector.getSession().beginTransaction();
-        connector.getSession().delete(participant);
+    public void removeByLogin(String login) {
+        Participant participant = getByLogin(login);
+        Transaction transaction = dbSession.beginTransaction();
+        dbSession.delete(participant);
         transaction.commit();
     }
-
 }

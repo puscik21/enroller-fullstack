@@ -1,0 +1,38 @@
+### GET /api/participants
+GET {{appAddress}}/api/participants
+
+
+### GET /api/participants
+GET {{appAddress}}/api/participants?sortBy=login&sortOrder=DESC
+
+
+### GET /api/participants
+GET {{appAddress}}/api/participants?key=z
+
+
+### GET /api/participants/{login}
+GET {{appAddress}}/api/participants/newuser
+
+
+### POST /api/participants
+POST {{appAddress}}/api/participants
+Content-Type: application/json
+
+{
+  "login": "admin",
+  "password": "password"
+}
+
+
+### PUT /api/participants/{login}
+PUT {{appAddress}}/api/participants/newuser
+Content-Type: application/json
+
+{
+  "login": "newuser",
+  "password": "updatedPassword"
+}
+
+
+### DELETE /api/participants/{login}
+DELETE {{appAddress}}/api/participants/newuser

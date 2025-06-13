@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-lab": "file:src/main/frontend"
+  }
+}
