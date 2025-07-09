@@ -1,5 +1,6 @@
 ### GET /api/meetings
 GET {{appAddress}}/api/meetings
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/meetings/{id}
