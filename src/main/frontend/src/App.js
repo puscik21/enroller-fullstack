@@ -3,18 +3,28 @@ import "milligram"
 import styled from "styled-components";
 import UserPanel from "./user/UserPanel";
 import LoginForm from "./user/LoginForm";
+import {loginRequest} from "./api/authApi";
 
 function App() {
-    const [loggedInLogin, setLoggedInLogin] = useState("");
+    const [loggedInUser, setLoggedInUser] = useState("");
 
-    const onLogin = (login) => setLoggedInLogin(login);
-    const onLogout = () => setLoggedInLogin("");
-    const isLoggedIn = loggedInLogin !== ""
+    // TODO: what will happen when JWT is expired
+    const onLogin = async (login) => {
+        if (await loginRequest(login, "password")) {
+            setLoggedInUser(localStorage.getItem("loggedInUser"));
+        }
+    }
 
+    const onLogout = () => {
+        localStorage.setItem("loggedInUser", "")
+        setLoggedInUser("")
+    }
+
+    const isLoggedIn = loggedInUser !== ""
     return (
         <Container>
             <h1>Meetings enroller system</h1>
-            {isLoggedIn ? <UserPanel login={loggedInLogin} onLogout={onLogout}/> : <LoginForm onLogin={onLogin}/>}
+            {isLoggedIn ? <UserPanel login={loggedInUser} onLogout={onLogout}/> : <LoginForm onLogin={onLogin}/>}
         </Container>
     );
 }

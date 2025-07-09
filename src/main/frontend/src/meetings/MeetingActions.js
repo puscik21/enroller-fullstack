@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import {signOutFromMeeting, signUpForMeeting} from "./participantsApi";
+import {signOutFromMeetingRequest, signUpForMeetingRequest} from "../api/participantsApi";
 
 const MeetingActions = ({meeting, login, onDelete, reloadMeetings}) => {
     return (
@@ -14,7 +14,7 @@ const MeetingActions = ({meeting, login, onDelete, reloadMeetings}) => {
 const SignInForMeetingButton = ({meeting, login, reloadMeetings}) => {
     if (isUserParticipant(meeting, login)) return null;
     return (
-        <button onClick={() => signUpForMeeting(meeting.id, login, reloadMeetings)}>Sign in</button>
+        <button onClick={() => signUpForMeetingRequest(meeting.id, login, reloadMeetings)}>Sign in</button>
     )
 }
 
@@ -22,7 +22,7 @@ const SignOutFromMeetingButton = ({meeting, login, reloadMeetings}) => {
     if (!isUserParticipant(meeting, login)) return null;
     return (
         <button className="button button-outline"
-                onClick={() => signOutFromMeeting(meeting.id, login, reloadMeetings)}>
+                onClick={() => signOutFromMeetingRequest(meeting.id, login, reloadMeetings)}>
             Sign out
         </button>
     )

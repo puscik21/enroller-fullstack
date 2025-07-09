@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
-import {addNewMeetingRequest, fetchMeetingsRequest, deleteMeetingRequest} from "./meetingsApi";
+import {addNewMeetingRequest, deleteMeetingRequest, fetchMeetingsRequest} from "../api/meetingsApi";
 
 const MeetingsPage = ({login}) => {
     const [meetings, setMeetings] = useState([]);
@@ -13,6 +13,9 @@ const MeetingsPage = ({login}) => {
 
     const handleNewMeeting = async (meeting) => {
         const addedMeeting = await addNewMeetingRequest(meeting)
+        if (addedMeeting === undefined) {
+            return
+        }
         const nextMeetings = [...meetings, addedMeeting];
         setMeetings(nextMeetings);
         setNewMeetingFormOpened(false);
