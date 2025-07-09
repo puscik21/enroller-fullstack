@@ -23,7 +23,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     public JWTAuthorizationFilter(AuthenticationManager authManager, String secret) {
         super(authManager);
-        this.verifier = JWT.require(Algorithm.HMAC256(secret)).acceptExpiresAt(System.currentTimeMillis()).build(); // TODO: what time here?
+        this.verifier = JWT.require(Algorithm.HMAC256(secret)).acceptExpiresAt(0).build();
     }
 
     @Override

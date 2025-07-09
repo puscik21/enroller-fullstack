@@ -1,5 +1,6 @@
 ### GET /api/participants
 GET {{appAddress}}/api/participants
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/participants

@@ -3,6 +3,6 @@ POST {{appAddress}}/api/login
 Content-Type: application/json
 
 {
-  "login": "test",
+  "login": "admin",
   "password": "password"
 }
