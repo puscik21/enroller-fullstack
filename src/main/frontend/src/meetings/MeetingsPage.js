@@ -1,68 +1,42 @@
-import { useState, useEffect } from "react";
+import {useEffect, useState} from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
+import {addNewMeetingRequest, fetchMeetingsRequest, deleteMeetingRequest} from "./meetingsApi";
 
-export default function MeetingsPage({ username }) {
+const MeetingsPage = ({login}) => {
     const [meetings, setMeetings] = useState([]);
-    const [addingNewMeeting, setAddingNewMeeting] = useState(false);
+    const [isNewMeetingFormOpened, setNewMeetingFormOpened] = useState(false);
 
     useEffect(() => {
-        fetchMeetings();
+        fetchMeetingsRequest(setMeetings);
     }, []);
 
-    async function fetchMeetings() {
-        const response = await fetch(`/api/meetings`);
-        if (response.ok) {
-            const meetings = await response.json();
-            setMeetings(meetings);
-        }
+    const handleNewMeeting = async (meeting) => {
+        const addedMeeting = await addNewMeetingRequest(meeting)
+        const nextMeetings = [...meetings, addedMeeting];
+        setMeetings(nextMeetings);
+        setNewMeetingFormOpened(false);
     }
 
-    async function handleNewMeeting(meeting) {
-        const response = await fetch('/api/meetings', {
-            method: 'POST',
-            body: JSON.stringify(meeting),
-            headers: { 'Content-Type': 'application/json' }
-        });
-        if (response.ok) {
-            const addedMeeting = await response.json();
-            const nextMeetings = [...meetings, addedMeeting];
-            setMeetings(nextMeetings);
-            setAddingNewMeeting(false);
-        }
-    }
-
-    async function handleDeleteMeeting(meeting) {
-        console.log("Usuwam spotkanie o id:", meeting.id);
-        const response = await fetch(`/api/meetings/${meeting.id}`, {
-            method: 'DELETE',
-        });
-
-        if (response.ok) {
-            const nextMeetings = meetings.filter(m => m.id !== meeting.id);
-            setMeetings(nextMeetings);
-        } else {
-            const text = await response.text();
-            console.error('Błąd przy usuwaniu:', response.status, text);
-            alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
-        }
-    }
+    const AddNewMeetingButton = () => (
+        <button onClick={() => setNewMeetingFormOpened(true)}>Add new meeting</button>
+    )
 
     return (
         <div>
-            <h2>Zajęcia ({meetings.length})</h2>
-            {
-                addingNewMeeting
-                    ? <NewMeetingForm onSubmit={handleNewMeeting} />
-                    : <button onClick={() => setAddingNewMeeting(true)}>Dodaj nowe spotkanie</button>
-            }
+            <h2>Meetings ({meetings.length})</h2>
+            {isNewMeetingFormOpened ?
+                <NewMeetingForm onSubmit={meeting => handleNewMeeting(meeting)}/>
+                : <AddNewMeetingButton/>}
             {meetings.length > 0 &&
                 <MeetingsList
                     meetings={meetings}
-                    username={username}
-                    onDelete={handleDeleteMeeting}
-                    reloadMeetings={fetchMeetings}
+                    login={login}
+                    onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}
+                    reloadMeetings={() => fetchMeetingsRequest(setMeetings)}
                 />}
         </div>
     );
 }
+
+export default MeetingsPage;

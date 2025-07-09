@@ -1,56 +1,33 @@
-export default function MeetingsList({ meetings, onDelete, username, reloadMeetings }) {
+import MeetingActions from "./MeetingActions";
 
-    async function subscribe(meetingId) {
-        console.log("Zapisuję się na spotkanie o ID:", meetingId);
-        const response = await fetch(`/api/meetings/${meetingId}/participants/${username}`, {
-            method: 'POST'
-        });
-        if (response.ok) {
-            reloadMeetings();
-        }
-    }
-
-    async function unsubscribe(meetingId) {
-        const response = await fetch(`/api/meetings/${meetingId}/participants/${username}`, {
-            method: 'DELETE'
-        });
-        if (response.ok) {
-            reloadMeetings();
-        }
-    }
-
-    function isUserParticipant(meeting) {
-        return meeting.participants && meeting.participants.some(p => p.login === username);
-    }
-
+const MeetingsList = ({meetings, login, onDelete, reloadMeetings}) => {
+    if (meetings.length === 0) return null;
     return (
         <table>
             <thead>
-                <tr>
-                    <th>Nazwa spotkania</th>
-                    <th>Opis</th>
-                    <th>Akcje</th>
-                </tr>
+            <tr>
+                <th>Meeting's title</th>
+                <th>Description</th>
+                <th>Participants</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody>
-                {meetings.map((meeting) => (
-                    <tr key={meeting.id}>
-                        <td>{meeting.title}</td>
-                        <td>{meeting.description}</td>
-                        <td>
-                            {isUserParticipant(meeting) ? (
-                                <button onClick={() => unsubscribe(meeting.id)}>Wypisz się</button>
-                            ) : (
-                                <button onClick={() => subscribe(meeting.id)}>Zapisz się</button>
-                            )}
-                            {" "}
-                            {meeting.participants.length === 0 && (
-                                <button onClick={() => onDelete(meeting)}>Usuń</button>
-                            )}
-                        </td>
-                    </tr>
-                ))}
+            {meetings.map(meeting => (
+                <tr key={meeting.id}>
+                    <td>{meeting.title}</td>
+                    <td>{meeting.description}</td>
+                    <td>{Array.isArray(meeting.participants) ? meeting.participants.map(participant =>
+                        <p key={participant.login}>{participant.login}</p>) : null}
+                    </td>
+                    <td><MeetingActions meeting={meeting} login={login} onDelete={onDelete}
+                                        reloadMeetings={reloadMeetings}/>
+                    </td>
+                </tr>
+            ))}
             </tbody>
         </table>
     );
 }
+
+export default MeetingsList;

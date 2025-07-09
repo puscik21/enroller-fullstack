@@ -1,0 +1,41 @@
+export const fetchMeetingsRequest = async (setMeetings) => {
+    const response = await fetch(`/api/meetings`);
+    if (response.ok) {
+        const meetings = await response.json();
+        setMeetings(meetings);
+    }
+}
+
+export const addNewMeetingRequest = async (meeting) => {
+    try {
+        const response = await fetch('/api/meetings', {
+            method: 'POST',
+            body: JSON.stringify(meeting),
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (response.ok) {
+            return await response.json();
+        }else {
+            // TODO: Possibly add some pop-up in such case
+            console.error("Could not add a meeting");
+        }
+    } catch (err) {
+        console.error("Adding meeting error:", err);
+    }
+}
+
+export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
+    console.log("Usuwam spotkanie o id:", meeting.id);
+    const response = await fetch(`/api/meetings/${meeting.id}`, {
+        method: 'DELETE',
+    });
+
+    if (response.ok) {
+        const nextMeetings = meetings.filter(m => m.id !== meeting.id);
+        setMeetings(nextMeetings);
+    } else {
+        const text = await response.text();
+        console.error('Błąd przy usuwaniu:', response.status, text);
+        alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
+    }
+}

@@ -1,28 +1,26 @@
-import "milligram";
-import './App.css';
 import {useState} from "react";
-import LoginForm from "./LoginForm";
-import UserPanel from "./UserPanel";
+import "milligram"
+import styled from "styled-components";
+import UserPanel from "./user/UserPanel";
+import LoginForm from "./user/LoginForm";
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState('');
+    const [loggedInLogin, setLoggedInLogin] = useState("");
 
-    function login(email) {
-        if (email) {
-            setLoggedIn(email);
-        }
-    }
-
-    function logout() {
-        setLoggedIn('');
-    }
+    const onLogin = (login) => setLoggedInLogin(login);
+    const onLogout = () => setLoggedInLogin("");
+    const isLoggedIn = loggedInLogin !== ""
 
     return (
-        <div>
-            <h1>System do zapisów na zajęcia</h1>
-            {loggedIn ? <UserPanel username={loggedIn} onLogout={logout}/> : <LoginForm onLogin={login}/>}
-        </div>
+        <Container>
+            <h1>Meetings enroller system</h1>
+            {isLoggedIn ? <UserPanel login={loggedInLogin} onLogout={onLogout}/> : <LoginForm onLogin={onLogin}/>}
+        </Container>
     );
 }
 
 export default App;
+
+const Container = styled.div`
+    margin: 2rem;
+`
