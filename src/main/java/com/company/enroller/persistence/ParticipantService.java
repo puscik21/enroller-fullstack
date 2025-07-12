@@ -1,6 +1,6 @@
 package com.company.enroller.persistence;
 
-import com.company.enroller.controllers.utils.SortOrder;
+import com.company.enroller.controller.utils.SortOrder;
 import com.company.enroller.exception.ObjectNotFoundException;
 import com.company.enroller.exception.ParticipantAlreadyExistsException;
 import com.company.enroller.model.Participant;

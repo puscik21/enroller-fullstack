@@ -1,4 +1,4 @@
-import MeetingsPage from "../meetings/MeetingsPage";
+import MeetingsPage from "../meeting/MeetingsPage";
 import styled from "styled-components";
 
 const UserPanel = ({login, onLogout}) => {

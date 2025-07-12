@@ -1,4 +1,4 @@
-package com.company.enroller.controllers.utils;
+package com.company.enroller.controller.utils;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
