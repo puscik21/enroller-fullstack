@@ -8,7 +8,7 @@ const UserPanel = ({login, onLogout}) => {
                 <h2>Welcome {login}!</h2>
                 <button onClick={() => onLogout()}>Log out</button>
             </HeaderRow>
-            <MeetingsPage login={login} />
+            <MeetingsPage login={login}/>
         </Container>
     )
 }
