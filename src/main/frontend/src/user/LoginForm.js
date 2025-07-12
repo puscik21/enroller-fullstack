@@ -1,13 +1,22 @@
 import {useState} from "react";
 import styled from "styled-components";
+import {ClipLoader} from "react-spinners";
 
 const LoginForm = ({onLogin, onRegister}) => {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = () => {
-        if (areCredentialsFilled()) onLogin(login, password);
+    const handleLogin = async () => {
+        if (areCredentialsFilled()) {
+            setIsLoading(true);
+            try {
+                await onLogin(login, password);
+            } finally {
+                setIsLoading(false);
+            }
+        }
     };
 
     const handleRegister = () => {
@@ -38,7 +47,9 @@ const LoginForm = ({onLogin, onRegister}) => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
             />
-            <button type="button" onClick={handleLogin}>Login</button>
+            <button type="button" onClick={handleLogin}>
+                {isLoading ? <ClipLoader size={16} color="#fff"/> : "Login"}
+            </button>
             <button type="button" className="button button-outline" onClick={handleRegister}>Register</button>
         </Container>
     )
