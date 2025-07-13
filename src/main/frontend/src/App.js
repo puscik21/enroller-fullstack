@@ -1,20 +1,20 @@
-import {useState} from "react";
 import "milligram"
 import styled from "styled-components";
 import UserPanel from "./user/UserPanel";
 import LoginForm from "./user/LoginForm";
-import {loginRequest, registerRequest} from "./api/authApi";
+import {registerRequest} from "./api/authApi";
 import {ToastContainer} from "react-toastify";
 import {notifyError, notifySuccess} from "./info/notifier";
+import {useAuth} from "./auth/AuthContext";
 
-function App() {
-    const [loggedInUser, setLoggedInUser] = useState(localStorage.getItem("loggedInUser"));
+const App = () => {
+    const {loggedInUser, loginUser, logoutUser} = useAuth();
 
     // TODO: what will happen when JWT is expired
     const onLogin = async (login, password) => {
-        if (await loginRequest(login, password)) {
-            setLoggedInUser(localStorage.getItem("loggedInUser"));
-        } else {
+        try {
+            await loginUser(login, password)
+        } catch (error) {
             notifyError("Login failed");
         }
     }
@@ -28,8 +28,7 @@ function App() {
     }
 
     const onLogout = () => {
-        localStorage.setItem("loggedInUser", "")
-        setLoggedInUser("")
+        logoutUser()
     }
 
     const isLoggedIn = !!loggedInUser && loggedInUser !== ""
