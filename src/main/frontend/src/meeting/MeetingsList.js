@@ -1,6 +1,14 @@
 import MeetingActions from "./MeetingActions";
+import {updateMeetingRequest} from "../api/meetingsApi";
+import styled from "styled-components";
 
 const MeetingsList = ({meetings, onDelete, reloadMeetings}) => {
+
+    const onUpdate = async (meeting) => {
+        await updateMeetingRequest(meeting);
+        reloadMeetings();
+    }
+
     if (meetings.length === 0) return null;
     return (
         <table>
@@ -15,12 +23,18 @@ const MeetingsList = ({meetings, onDelete, reloadMeetings}) => {
             <tbody>
             {meetings.map(meeting => (
                 <tr key={meeting.id}>
-                    <td>{meeting.title}</td>
+                    <td><Title>{meeting.title}</Title></td>
                     <td>{meeting.description}</td>
                     <td>{Array.isArray(meeting.participants) ? meeting.participants.map(participant =>
                         <p key={participant.login}>{participant.login}</p>) : null}
                     </td>
-                    <td><MeetingActions meeting={meeting} onDelete={onDelete} reloadMeetings={reloadMeetings}/>
+                    <td>
+                        <MeetingActions
+                            meeting={meeting}
+                            onUpdate={onUpdate}
+                            onDelete={onDelete}
+                            reloadMeetings={reloadMeetings}
+                        />
                     </td>
                 </tr>
             ))}
@@ -30,3 +44,7 @@ const MeetingsList = ({meetings, onDelete, reloadMeetings}) => {
 }
 
 export default MeetingsList;
+
+const Title = styled.div`
+    font-weight: bold;
+`

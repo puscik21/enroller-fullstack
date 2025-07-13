@@ -51,3 +51,25 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
         alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
     }
 }
+
+export const updateMeetingRequest = async (meeting) => {
+    console.log("Edytuje spotkanie o id:", meeting.id); // TODO: remove any console logs
+    const response = await fetch(`/api/meetings/${meeting.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(meeting),
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
+        },
+    });
+
+    if (response.ok) {
+        // const nextMeetings = meetings.filter(m => m.id !== meeting.id);
+        // setMeetings(nextMeetings);
+    } else {
+        const text = await response.text();
+        console.error('Błąd przy usuwaniu:', response.status, text);
+        alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
+        throw new Error(response.text || `Failed to update meeting: ${meeting.id}`);
+    }
+}

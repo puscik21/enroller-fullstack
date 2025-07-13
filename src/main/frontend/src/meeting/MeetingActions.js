@@ -1,13 +1,20 @@
 import styled from "styled-components";
 import {signOutFromMeetingRequest, signUpForMeetingRequest} from "../api/participantsApi";
 import {useAuth} from "../auth/AuthContext";
+import {useState} from "react";
+import EditForm from "./EditForm";
 
-const MeetingActions = ({meeting, onDelete, reloadMeetings}) => {
+const MeetingActions = ({meeting, onUpdate, onDelete, reloadMeetings}) => {
+    const [isEditing, setIsEditing] = useState(false);
+
     return (
         <ButtonGroup>
             <SignInForMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
             <SignOutFromMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
             <RemoveEmptyMeetingButton meeting={meeting} onDelete={onDelete}/>
+            <button onClick={() => setIsEditing(true)}>Edit</button>
+
+            {isEditing && <EditForm meeting={meeting} onUpdate={onUpdate}/>}
         </ButtonGroup>
     )
 }
