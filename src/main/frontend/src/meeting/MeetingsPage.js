@@ -1,15 +1,12 @@
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
-import {addNewMeetingRequest, deleteMeetingRequest, fetchMeetingsRequest} from "../api/meetingsApi";
+import {addNewMeetingRequest, deleteMeetingRequest} from "../api/meetingsApi";
+import {useMeetings} from "./MeetingsContext";
 
 const MeetingsPage = () => {
-    const [meetings, setMeetings] = useState([]);
+    const {meetings, setMeetings} = useMeetings();
     const [isNewMeetingFormOpened, setNewMeetingFormOpened] = useState(false);
-
-    useEffect(() => {
-        fetchMeetingsRequest(setMeetings);
-    }, []);
 
     const handleNewMeeting = async (meeting) => {
         const addedMeeting = await addNewMeetingRequest(meeting)
@@ -35,7 +32,6 @@ const MeetingsPage = () => {
                 <MeetingsList
                     meetings={meetings}
                     onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}
-                    reloadMeetings={() => fetchMeetingsRequest(setMeetings)}
                 />}
         </div>
     );

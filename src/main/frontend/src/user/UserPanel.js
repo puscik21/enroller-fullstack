@@ -1,6 +1,7 @@
 import MeetingsPage from "../meeting/MeetingsPage";
 import styled from "styled-components";
 import {useAuth} from "../auth/AuthContext";
+import {MeetingsProvider} from "../meeting/MeetingsContext";
 
 const UserPanel = ({onLogout}) => {
     const {loggedInUser} = useAuth()
@@ -11,7 +12,9 @@ const UserPanel = ({onLogout}) => {
                 <h2>Welcome {loggedInUser}!</h2>
                 <button onClick={() => onLogout()}>Log out</button>
             </HeaderRow>
-            <MeetingsPage/>
+            <MeetingsProvider>
+                <MeetingsPage/>
+            </MeetingsProvider>
         </Container>
     )
 }

@@ -2,15 +2,14 @@
 
 import {notifyError} from "../info/notifier";
 
-export const fetchMeetingsRequest = async (setMeetings) => {
+export const fetchMeetingsRequest = async () => {
     const response = await fetch(`/api/meetings`, {
         headers: {
             "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
         },
     });
     if (response.ok) {
-        const meetings = await response.json();
-        setMeetings(meetings);
+        return response.json();
     } else {
         notifyError("Meetings not found")
     }
@@ -51,6 +50,7 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
         setMeetings(nextMeetings);
     } else {
         const text = await response.text();
+        // TODO: use toast
         console.error('Błąd przy usuwaniu:', response.status, text);
         alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
     }
@@ -68,6 +68,7 @@ export const updateMeetingRequest = async (meeting) => {
     });
 
     if (response.ok) {
+        // TODO: probably some improvement
         // const nextMeetings = meetings.filter(m => m.id !== meeting.id);
         // setMeetings(nextMeetings);
     } else {

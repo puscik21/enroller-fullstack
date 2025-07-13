@@ -1,12 +1,14 @@
 import MeetingActions from "./MeetingActions";
 import {updateMeetingRequest} from "../api/meetingsApi";
 import styled from "styled-components";
+import {useMeetings} from "./MeetingsContext";
 
-const MeetingsList = ({meetings, onDelete, reloadMeetings}) => {
+const MeetingsList = ({meetings, onDelete}) => {
+    const {reloadMeetings} = useMeetings();
 
     const onUpdate = async (meeting) => {
         await updateMeetingRequest(meeting);
-        reloadMeetings();
+        await reloadMeetings();
     }
 
     if (meetings.length === 0) return null;
