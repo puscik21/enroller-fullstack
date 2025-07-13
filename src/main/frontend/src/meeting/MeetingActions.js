@@ -8,14 +8,14 @@ const MeetingActions = ({meeting, onUpdate, onDelete, reloadMeetings}) => {
     const [isEditing, setIsEditing] = useState(false);
 
     return (
-        <ButtonGroup>
-            <SignInForMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
-            <SignOutFromMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
-            <RemoveEmptyMeetingButton meeting={meeting} onDelete={onDelete}/>
-            <button onClick={() => setIsEditing(true)}>Edit</button>
-
-            {isEditing && <EditForm meeting={meeting} onUpdate={onUpdate}/>}
-        </ButtonGroup>
+        isEditing
+            ? <EditForm meeting={meeting} onUpdate={onUpdate} onClose={() => setIsEditing(false)}/>
+            : <ButtonGroup>
+                <SignInForMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
+                <SignOutFromMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
+                <button className="button button-outline" onClick={() => setIsEditing(true)}>Edit</button>
+                <RemoveEmptyMeetingButton meeting={meeting} onDelete={onDelete}/>
+            </ButtonGroup>
     )
 }
 
