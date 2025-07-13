@@ -20,7 +20,7 @@ const App = () => {
     }
 
     const onRegister = async (login, password) => {
-        if (await registerRequest(login, password)) {
+        if (await registerRequest({login, password})) {
             notifySuccess(`User '${login}' registered`)
         } else {
             notifyError(`Error while registering user '${login}'`)

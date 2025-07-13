@@ -1,5 +1,7 @@
 // TODO: more generic API
 
+import {notifyError} from "../info/notifier";
+
 export const fetchMeetingsRequest = async (setMeetings) => {
     const response = await fetch(`/api/meetings`, {
         headers: {
@@ -9,6 +11,8 @@ export const fetchMeetingsRequest = async (setMeetings) => {
     if (response.ok) {
         const meetings = await response.json();
         setMeetings(meetings);
+    } else {
+        notifyError("Meetings not found")
     }
 }
 
