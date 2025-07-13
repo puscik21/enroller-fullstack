@@ -35,7 +35,7 @@ const App = () => {
     return (
         <Container>
             <h1>Meetings enroller system</h1>
-            {isLoggedIn ? <UserPanel login={loggedInUser} onLogout={onLogout}/> :
+            {isLoggedIn ? <UserPanel onLogout={onLogout}/> :
                 <LoginForm onLogin={onLogin} onRegister={onRegister}/>}
             <ToastContainer/>
         </Container>

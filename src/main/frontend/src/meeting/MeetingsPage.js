@@ -3,7 +3,7 @@ import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
 import {addNewMeetingRequest, deleteMeetingRequest, fetchMeetingsRequest} from "../api/meetingsApi";
 
-const MeetingsPage = ({login}) => {
+const MeetingsPage = () => {
     const [meetings, setMeetings] = useState([]);
     const [isNewMeetingFormOpened, setNewMeetingFormOpened] = useState(false);
 
@@ -34,7 +34,6 @@ const MeetingsPage = ({login}) => {
             {meetings.length > 0 &&
                 <MeetingsList
                     meetings={meetings}
-                    login={login}
                     onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}
                     reloadMeetings={() => fetchMeetingsRequest(setMeetings)}
                 />}

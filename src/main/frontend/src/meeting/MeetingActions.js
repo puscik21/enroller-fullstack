@@ -1,28 +1,33 @@
 import styled from "styled-components";
 import {signOutFromMeetingRequest, signUpForMeetingRequest} from "../api/participantsApi";
+import {useAuth} from "../auth/AuthContext";
 
-const MeetingActions = ({meeting, login, onDelete, reloadMeetings}) => {
+const MeetingActions = ({meeting, onDelete, reloadMeetings}) => {
     return (
         <ButtonGroup>
-            <SignInForMeetingButton meeting={meeting} login={login} reloadMeetings={reloadMeetings}/>
-            <SignOutFromMeetingButton meeting={meeting} login={login} reloadMeetings={reloadMeetings}/>
+            <SignInForMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
+            <SignOutFromMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
             <RemoveEmptyMeetingButton meeting={meeting} onDelete={onDelete}/>
         </ButtonGroup>
     )
 }
 
-const SignInForMeetingButton = ({meeting, login, reloadMeetings}) => {
-    if (isUserParticipant(meeting, login)) return null;
+const SignInForMeetingButton = ({meeting, reloadMeetings}) => {
+    const {loggedInUser} = useAuth();
+
+    if (isUserParticipant(meeting, loggedInUser)) return null;
     return (
-        <button onClick={() => signUpForMeetingRequest(meeting.id, login, reloadMeetings)}>Sign in</button>
+        <button onClick={() => signUpForMeetingRequest(meeting.id, loggedInUser, reloadMeetings)}>Sign in</button>
     )
 }
 
-const SignOutFromMeetingButton = ({meeting, login, reloadMeetings}) => {
-    if (!isUserParticipant(meeting, login)) return null;
+const SignOutFromMeetingButton = ({meeting, reloadMeetings}) => {
+    const {loggedInUser} = useAuth();
+
+    if (!isUserParticipant(meeting, loggedInUser)) return null;
     return (
         <button className="button button-outline"
-                onClick={() => signOutFromMeetingRequest(meeting.id, login, reloadMeetings)}>
+                onClick={() => signOutFromMeetingRequest(meeting.id, loggedInUser, reloadMeetings)}>
             Sign out
         </button>
     )
