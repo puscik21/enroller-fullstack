@@ -1,4 +1,5 @@
 export const signUpForMeetingRequest = async (meetingId, login, reloadMeetings) => {
+    // TODO: use axios
     const response = await fetch(`/api/meetings/${meetingId}/participants/${login}`, {
         method: 'POST',
         headers: {
@@ -11,6 +12,7 @@ export const signUpForMeetingRequest = async (meetingId, login, reloadMeetings) 
 }
 
 export const signOutFromMeetingRequest = async (meetingId, login, reloadMeetings) => {
+    // TODO: use axios
     const response = await fetch(`/api/meetings/${meetingId}/participants/${login}`, {
         method: 'DELETE',
         headers: {

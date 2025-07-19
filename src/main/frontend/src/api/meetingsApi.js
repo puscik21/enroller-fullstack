@@ -1,22 +1,21 @@
 // TODO: more generic API
 
 import {notifyError} from "../info/notifier";
+import api from "./apiInstance";
 
 export const fetchMeetingsRequest = async () => {
-    const response = await fetch(`/api/meetings`, {
-        headers: {
-            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
-        },
-    });
-    if (response.ok) {
-        return response.json();
-    } else {
-        notifyError("Meetings not found")
+    try {
+        const response = await api.get("/meetings");
+        return response.data;
+    } catch (error) {
+        notifyError("Meetings not found");
+        throw error;
     }
 }
 
 export const addNewMeetingRequest = async (meeting) => {
     try {
+        // TODO: use axios
         const response = await fetch('/api/meetings', {
             method: 'POST',
             body: JSON.stringify(meeting),
@@ -37,7 +36,7 @@ export const addNewMeetingRequest = async (meeting) => {
 }
 
 export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
-    console.log("Usuwam spotkanie o id:", meeting.id);
+    // TODO: use axios
     const response = await fetch(`/api/meetings/${meeting.id}`, {
         method: 'DELETE',
         headers: {
@@ -46,6 +45,7 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
     });
 
     if (response.ok) {
+        // TODO: probably fetch meetings again after deletion
         const nextMeetings = meetings.filter(m => m.id !== meeting.id);
         setMeetings(nextMeetings);
     } else {
@@ -58,6 +58,7 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
 
 export const updateMeetingRequest = async (meeting) => {
     console.log("Edytuje spotkanie o id:", meeting.id); // TODO: remove any console logs
+    // TODO: use axios
     const response = await fetch(`/api/meetings/${meeting.id}`, {
         method: 'PUT',
         body: JSON.stringify(meeting),

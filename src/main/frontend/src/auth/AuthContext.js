@@ -1,6 +1,8 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
 import {loginRequest} from "../api/authApi";
 import {notifyError} from "../info/notifier";
+import {setupInterceptors} from "../api/interceptor";
+import api from "../api/apiInstance";
 
 const AuthContext = createContext();
 
@@ -27,6 +29,12 @@ export const AuthProvider = ({children}) => {
         localStorage.removeItem("bearerToken");
         localStorage.removeItem("loggedInUser");
     }
+
+    useEffect(() => {
+        return () => {
+            setupInterceptors(api, logoutUser)
+        };
+    }, [logoutUser]);
 
     return (
         <AuthContext.Provider value={{loggedInUser, loginUser, logoutUser}}>

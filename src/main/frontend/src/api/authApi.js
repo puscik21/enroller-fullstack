@@ -1,4 +1,5 @@
 export const loginRequest = async (credentials) => {
+    // TODO: use axios
     const response = await fetch("/api/login", {
         method: "POST",
         headers: new Headers({
@@ -17,6 +18,7 @@ export const loginRequest = async (credentials) => {
 }
 
 export const registerRequest = async (credentials) => {
+    // TODO: use axios
     const response = await fetch(`/api/participants`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
