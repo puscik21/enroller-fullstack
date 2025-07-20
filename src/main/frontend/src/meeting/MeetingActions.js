@@ -7,11 +7,11 @@ import {useMeetings} from "./MeetingsContext";
 
 const MeetingActions = ({meeting}) => {
     const [isEditing, setIsEditing] = useState(false);
-    const {reloadMeetings, onUpdate} = useMeetings();
+    const {reloadMeetings} = useMeetings();
 
     return (
         isEditing
-            ? <EditForm meeting={meeting} onUpdate={onUpdate} onClose={() => setIsEditing(false)}/>
+            ? <EditForm meeting={meeting} onClose={() => setIsEditing(false)}/>
             : <ButtonGroup>
                 <SignInForMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>
                 <SignOutFromMeetingButton meeting={meeting} reloadMeetings={reloadMeetings}/>

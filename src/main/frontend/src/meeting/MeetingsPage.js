@@ -1,20 +1,14 @@
 import {useState} from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
-import {addNewMeetingRequest, deleteMeetingRequest} from "../api/meetingsApi";
 import {useMeetings} from "./MeetingsContext";
 
 const MeetingsPage = () => {
-    const {meetings, setMeetings} = useMeetings();
     const [isNewMeetingFormOpened, setNewMeetingFormOpened] = useState(false);
+    const {meetings, addNewMeeting} = useMeetings();
 
     const handleNewMeeting = async (meeting) => {
-        const addedMeeting = await addNewMeetingRequest(meeting)
-        if (addedMeeting === undefined) {
-            return
-        }
-        const nextMeetings = [...meetings, addedMeeting];
-        setMeetings(nextMeetings);
+        await addNewMeeting(meeting);
         setNewMeetingFormOpened(false);
     }
 
@@ -25,11 +19,10 @@ const MeetingsPage = () => {
     return (
         <div>
             <h2>Meetings ({meetings.length})</h2>
-            {isNewMeetingFormOpened ?
-                <NewMeetingForm onSubmit={meeting => handleNewMeeting(meeting)}/>
+            {isNewMeetingFormOpened
+                ? <NewMeetingForm onSubmit={meeting => handleNewMeeting(meeting)}/>
                 : <AddNewMeetingButton/>}
-            {meetings.length > 0 &&
-                <MeetingsList onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}/>}
+            {meetings.length > 0 && <MeetingsList/>}
         </div>
     );
 }

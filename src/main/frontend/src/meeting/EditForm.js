@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import {useState} from "react";
+import {useMeetings} from "./MeetingsContext";
 
-const EditForm = ({meeting, onUpdate, onClose}) => {
+const EditForm = ({meeting, onClose}) => {
     const [title, setTitle] = useState(meeting.title);
     const [description, setDescription] = useState(meeting.description);
+    const {onUpdate} = useMeetings();
 
     const handleSave = () => {
         const newMeeting = {...meeting, title, description};
@@ -34,6 +36,7 @@ const Container = styled.div`
     input {
         font-weight: bold;
     }
+
     input, textarea {
         font-size: 1.3rem;
     }
