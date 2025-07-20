@@ -1,6 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {fetchMeetingsRequest} from "../api/meetingsApi";
-
+import {deleteMeetingRequest, fetchMeetingsRequest} from "../api/meetingsApi";
 
 const MeetingsContext = createContext();
 
@@ -8,7 +7,7 @@ export const MeetingsProvider = ({children}) => {
     const [meetings, setMeetings] = useState([]);
 
     useEffect(() => {
-        reloadMeetings()
+        reloadMeetings();
     }, []);
 
     // TODO: fix bug of querying meetigns 2 times
@@ -18,7 +17,14 @@ export const MeetingsProvider = ({children}) => {
         // TODO: in catch notify with toast
     }
 
-    // TODO: updatedMeeting, onDelete
+    // TODO: updateMeeting
+
+    const deleteMeeting = async (meeting) => {
+        // const fetchedMeetings =
+        await deleteMeetingRequest(meeting, meetings, setMeetings);
+        // setMeetings(fetchedMeetings)
+        // TODO: in catch notify with toast
+    }
 
     return (
         <MeetingsContext.Provider value={{meetings, setMeetings, reloadMeetings}}>
