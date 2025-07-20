@@ -1,5 +1,5 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {deleteMeetingRequest, fetchMeetingsRequest} from "../api/meetingsApi";
+import {deleteMeetingRequest, fetchMeetingsRequest, updateMeetingRequest} from "../api/meetingsApi";
 
 const MeetingsContext = createContext();
 
@@ -17,7 +17,12 @@ export const MeetingsProvider = ({children}) => {
         // TODO: in catch notify with toast
     }
 
+
     // TODO: updateMeeting
+    const onUpdate = async (meeting) => {
+        await updateMeetingRequest(meeting);
+        await reloadMeetings();
+    }
 
     const deleteMeeting = async (meeting) => {
         // const fetchedMeetings =
@@ -26,8 +31,9 @@ export const MeetingsProvider = ({children}) => {
         // TODO: in catch notify with toast
     }
 
+    // TODO: remove setMeetings from Provider
     return (
-        <MeetingsContext.Provider value={{meetings, setMeetings, reloadMeetings}}>
+        <MeetingsContext.Provider value={{meetings, setMeetings, reloadMeetings, onUpdate, deleteMeeting}}>
             {children}
         </MeetingsContext.Provider>
     );

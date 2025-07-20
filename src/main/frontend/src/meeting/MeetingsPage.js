@@ -29,10 +29,7 @@ const MeetingsPage = () => {
                 <NewMeetingForm onSubmit={meeting => handleNewMeeting(meeting)}/>
                 : <AddNewMeetingButton/>}
             {meetings.length > 0 &&
-                <MeetingsList
-                    meetings={meetings}
-                    onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}
-                />}
+                <MeetingsList onDelete={meeting => deleteMeetingRequest(meeting, meetings, setMeetings)}/>}
         </div>
     );
 }

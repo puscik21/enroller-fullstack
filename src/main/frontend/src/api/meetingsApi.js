@@ -35,6 +35,7 @@ export const addNewMeetingRequest = async (meeting) => {
     }
 }
 
+// TODO: get rid of setMeetings and meetings here
 export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
     // TODO: use axios
     const response = await fetch(`/api/meetings/${meeting.id}`, {

@@ -1,16 +1,9 @@
 import MeetingActions from "./MeetingActions";
-import {updateMeetingRequest} from "../api/meetingsApi";
 import styled from "styled-components";
 import {useMeetings} from "./MeetingsContext";
 
-const MeetingsList = ({meetings, onDelete}) => {
-    const {reloadMeetings} = useMeetings();
-
-    // TODO: useMeetings
-    const onUpdate = async (meeting) => {
-        await updateMeetingRequest(meeting);
-        await reloadMeetings();
-    }
+const MeetingsList = () => {
+    const {meetings} = useMeetings();
 
     if (meetings.length === 0) return null;
     return (
@@ -33,12 +26,7 @@ const MeetingsList = ({meetings, onDelete}) => {
                             <p key={participant.login}>{participant.login}</p>) : null}
                         </td>
                         <td>
-                            <MeetingActions
-                                meeting={meeting}
-                                onUpdate={onUpdate}
-                                onDelete={onDelete}
-                                reloadMeetings={reloadMeetings}
-                            />
+                            <MeetingActions meeting={meeting}/>
                         </td>
                     </tr>
                 ))}
@@ -54,7 +42,6 @@ const Container = styled.div`
     margin: 50px auto;
 `
 
-const
-Title = styled.div`
+const Title = styled.div`
     font-weight: bold;
 `
