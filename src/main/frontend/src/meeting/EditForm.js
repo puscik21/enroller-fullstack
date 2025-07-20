@@ -5,11 +5,11 @@ import {useMeetings} from "./MeetingsContext";
 const EditForm = ({meeting, onClose}) => {
     const [title, setTitle] = useState(meeting.title);
     const [description, setDescription] = useState(meeting.description);
-    const {onUpdate} = useMeetings();
+    const {updateMeeting} = useMeetings();
 
     const handleSave = () => {
         const newMeeting = {...meeting, title, description};
-        onUpdate(newMeeting);
+        updateMeeting(newMeeting);
         onClose();
     }
 

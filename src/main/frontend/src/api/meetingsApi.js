@@ -9,73 +9,32 @@ export const fetchMeetingsRequest = async () => {
         return response.data;
     } catch (error) {
         notifyError("Meetings not found");
-        throw error;
     }
 }
 
 export const addNewMeetingRequest = async (meeting) => {
     try {
-        // TODO: use axios
-        const response = await fetch('/api/meetings', {
-            method: 'POST',
-            body: JSON.stringify(meeting),
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
-            },
-        });
-        if (response.ok) {
-            return await response.json();
-        } else {
-            // TODO: Possibly add some pop-up in such case
-            console.error("Could not add a meeting");
-        }
-    } catch (err) {
-        console.error("Adding meeting error:", err);
+        const response = await api.post(`/meetings`, JSON.stringify(meeting));
+        return response.data;
+    } catch (error) {
+        notifyError("Could not add the meeting");
     }
 }
 
-// TODO: get rid of setMeetings and meetings here
-export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
-    // TODO: use axios
-    const response = await fetch(`/api/meetings/${meeting.id}`, {
-        method: 'DELETE',
-        headers: {
-            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
-        },
-    });
-
-    if (response.ok) {
-        // TODO: probably fetch meetings again after deletion
-        const nextMeetings = meetings.filter(m => m.id !== meeting.id);
-        setMeetings(nextMeetings);
-    } else {
-        const text = await response.text();
-        // TODO: use toast
-        console.error('Błąd przy usuwaniu:', response.status, text);
-        alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
+export const deleteMeetingRequest = async (meeting) => {
+    try {
+        const response = await api.delete(`/meetings/${meeting.id}`);
+        return response.data;
+    } catch (error) {
+        notifyError("Error while deleting the meeting");
     }
 }
 
 export const updateMeetingRequest = async (meeting) => {
-    // TODO: use axios
-    const response = await fetch(`/api/meetings/${meeting.id}`, {
-        method: 'PUT',
-        body: JSON.stringify(meeting),
-        headers: {
-            'Content-Type': 'application/json',
-            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
-        },
-    });
-
-    if (response.ok) {
-        // TODO: probably some improvement
-        // const nextMeetings = meetings.filter(m => m.id !== meeting.id);
-        // setMeetings(nextMeetings);
-    } else {
-        const text = await response.text();
-        console.error('Błąd przy usuwaniu:', response.status, text);
-        alert(`Nie udało się usunąć spotkania (${response.status}): ${text}`);
-        throw new Error(response.text || `Failed to update meeting: ${meeting.id}`);
+    try {
+        const response = await api.put(`/meetings/${meeting.id}`, JSON.stringify(meeting));
+        return response.data;
+    } catch (error) {
+        notifyError("Error while updating the meeting");
     }
 }

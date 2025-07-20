@@ -25,27 +25,25 @@ export const MeetingsProvider = ({children}) => {
         if (newMeeting === undefined) {
             return
         }
-        const nextMeetings = [...meetings, newMeeting];
-        setMeetings(nextMeetings);
+        await reloadMeetings();
     }
 
-    // TODO: updateMeeting
-    const onUpdate = async (meeting) => {
-        await updateMeetingRequest(meeting);
+    const updateMeeting = async (meeting) => {
+        const newMeeting = await updateMeetingRequest(meeting);
+        if (newMeeting === undefined) {
+            return
+        }
         await reloadMeetings();
     }
 
     const deleteMeeting = async (meeting) => {
-        // const fetchedMeetings =
-        await deleteMeetingRequest(meeting, meetings, setMeetings);
-        // setMeetings(fetchedMeetings)
-        // TODO: in catch notify with toast
+        await deleteMeetingRequest(meeting);
+        await reloadMeetings();
     }
 
-    // TODO: remove setMeetings from Provider
     return (
         <MeetingsContext.Provider
-            value={{meetings, setMeetings, reloadMeetings, addNewMeeting, onUpdate, deleteMeeting}}>
+            value={{meetings, reloadMeetings, addNewMeeting, updateMeeting, deleteMeeting}}>
             {children}
         </MeetingsContext.Provider>
     );
