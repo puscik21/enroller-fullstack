@@ -57,7 +57,6 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
 }
 
 export const updateMeetingRequest = async (meeting) => {
-    console.log("Edytuje spotkanie o id:", meeting.id); // TODO: remove any console logs
     // TODO: use axios
     const response = await fetch(`/api/meetings/${meeting.id}`, {
         method: 'PUT',
