@@ -14,7 +14,7 @@ export const fetchMeetingsRequest = async () => {
 
 export const addNewMeetingRequest = async (meeting) => {
     try {
-        const response = await api.post(`/meetings`, JSON.stringify(meeting));
+        const response = await api.post(`/meetings`, meeting);
         return response.data;
     } catch (error) {
         notifyError("Could not add the meeting");
@@ -32,7 +32,7 @@ export const deleteMeetingRequest = async (meeting) => {
 
 export const updateMeetingRequest = async (meeting) => {
     try {
-        const response = await api.put(`/meetings/${meeting.id}`, JSON.stringify(meeting));
+        const response = await api.put(`/meetings/${meeting.id}`, meeting);
         return response.data;
     } catch (error) {
         notifyError("Error while updating the meeting");
