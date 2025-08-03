@@ -1,20 +1,43 @@
-import {useState} from "react";
 import "milligram"
 import styled from "styled-components";
 import UserPanel from "./user/UserPanel";
 import LoginForm from "./user/LoginForm";
+import {registerRequest} from "./api/authApi";
+import {ToastContainer} from "react-toastify";
+import {notifyError, notifySuccess} from "./info/notifier";
+import {useAuth} from "./auth/AuthContext";
 
-function App() {
-    const [loggedInLogin, setLoggedInLogin] = useState("");
+const App = () => {
+    const {loggedInUser, loginUser, logoutUser} = useAuth();
 
-    const onLogin = (login) => setLoggedInLogin(login);
-    const onLogout = () => setLoggedInLogin("");
-    const isLoggedIn = loggedInLogin !== ""
+    // TODO: what will happen when JWT is expired
+    const onLogin = async (login, password) => {
+        try {
+            await loginUser(login, password)
+        } catch (error) {
+            notifyError("Login failed");
+        }
+    }
 
+    const onRegister = async (login, password) => {
+        if (await registerRequest(login, password)) {
+            notifySuccess(`User '${login}' registered`)
+        } else {
+            notifyError(`Error while registering user '${login}'`)
+        }
+    }
+
+    const onLogout = () => {
+        logoutUser()
+    }
+
+    const isLoggedIn = !!loggedInUser && loggedInUser !== ""
     return (
         <Container>
             <h1>Meetings enroller system</h1>
-            {isLoggedIn ? <UserPanel login={loggedInLogin} onLogout={onLogout}/> : <LoginForm onLogin={onLogin}/>}
+            {isLoggedIn ? <UserPanel onLogout={onLogout}/> :
+                <LoginForm onLogin={onLogin} onRegister={onRegister}/>}
+            <ToastContainer/>
         </Container>
     );
 }

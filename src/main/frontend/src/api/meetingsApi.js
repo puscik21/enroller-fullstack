@@ -1,5 +1,11 @@
+// TODO: more generic API
+
 export const fetchMeetingsRequest = async (setMeetings) => {
-    const response = await fetch(`/api/meetings`);
+    const response = await fetch(`/api/meetings`, {
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
+        },
+    });
     if (response.ok) {
         const meetings = await response.json();
         setMeetings(meetings);
@@ -11,11 +17,14 @@ export const addNewMeetingRequest = async (meeting) => {
         const response = await fetch('/api/meetings', {
             method: 'POST',
             body: JSON.stringify(meeting),
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
+            },
         });
         if (response.ok) {
             return await response.json();
-        }else {
+        } else {
             // TODO: Possibly add some pop-up in such case
             console.error("Could not add a meeting");
         }
@@ -28,6 +37,9 @@ export const deleteMeetingRequest = async (meeting, meetings, setMeetings) => {
     console.log("Usuwam spotkanie o id:", meeting.id);
     const response = await fetch(`/api/meetings/${meeting.id}`, {
         method: 'DELETE',
+        headers: {
+            "Authorization": `Bearer ${localStorage.getItem("bearerToken")}`,
+        },
     });
 
     if (response.ok) {

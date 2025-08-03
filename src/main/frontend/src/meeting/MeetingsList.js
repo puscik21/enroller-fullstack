@@ -1,6 +1,6 @@
 import MeetingActions from "./MeetingActions";
 
-const MeetingsList = ({meetings, login, onDelete, reloadMeetings}) => {
+const MeetingsList = ({meetings, onDelete, reloadMeetings}) => {
     if (meetings.length === 0) return null;
     return (
         <table>
@@ -20,8 +20,7 @@ const MeetingsList = ({meetings, login, onDelete, reloadMeetings}) => {
                     <td>{Array.isArray(meeting.participants) ? meeting.participants.map(participant =>
                         <p key={participant.login}>{participant.login}</p>) : null}
                     </td>
-                    <td><MeetingActions meeting={meeting} login={login} onDelete={onDelete}
-                                        reloadMeetings={reloadMeetings}/>
+                    <td><MeetingActions meeting={meeting} onDelete={onDelete} reloadMeetings={reloadMeetings}/>
                     </td>
                 </tr>
             ))}

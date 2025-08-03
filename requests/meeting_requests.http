@@ -1,5 +1,6 @@
 ### GET /api/meetings
 GET {{appAddress}}/api/meetings
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/meetings/{id}
@@ -9,6 +10,7 @@ GET {{appAddress}}/api/meetings/1
 ### POST /api/meetings
 POST {{appAddress}}/api/meetings
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "id": 1,

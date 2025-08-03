@@ -1,6 +1,6 @@
 package com.company.enroller.persistence;
 
-import com.company.enroller.controllers.utils.SortOrder;
+import com.company.enroller.controller.utils.SortOrder;
 import com.company.enroller.exception.ObjectNotFoundException;
 import com.company.enroller.exception.ParticipantAlreadyExistsException;
 import com.company.enroller.model.Participant;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -19,6 +20,8 @@ import java.util.Optional;
 public class ParticipantService {
 
     private final Session dbSession;
+
+    private final PasswordEncoder passwordEncoder;
 
     public List<Participant> getAll(String filter, String sortBy, SortOrder sortOrder) {
         StringBuilder hql = new StringBuilder("FROM Participant");
@@ -56,7 +59,7 @@ public class ParticipantService {
             throw new ParticipantAlreadyExistsException(participant.getLogin());
         }
         Transaction transaction = dbSession.beginTransaction();
-        dbSession.save(participant);
+        dbSession.save(setEncodedPassword(participant));
         transaction.commit();
         return participant;
     }
@@ -65,8 +68,14 @@ public class ParticipantService {
         getByLogin(login);
         participant.setLogin(login);
         Transaction transaction = dbSession.beginTransaction();
-        dbSession.merge(participant);
+        dbSession.merge(setEncodedPassword(participant));
         transaction.commit();
+        return participant;
+    }
+
+    private Participant setEncodedPassword(Participant participant) {
+        String hashedPassword = passwordEncoder.encode(participant.getPassword());
+        participant.setPassword(hashedPassword);
         return participant;
     }
 

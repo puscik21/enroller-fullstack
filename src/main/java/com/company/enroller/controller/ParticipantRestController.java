@@ -1,7 +1,7 @@
-package com.company.enroller.controllers;
+package com.company.enroller.controller;
 
-import com.company.enroller.controllers.utils.ControllerUtils;
-import com.company.enroller.controllers.utils.SortOrder;
+import com.company.enroller.controller.utils.ControllerUtils;
+import com.company.enroller.controller.utils.SortOrder;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.ParticipantService;
 import lombok.RequiredArgsConstructor;
