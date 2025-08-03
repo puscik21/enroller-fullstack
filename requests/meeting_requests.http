@@ -5,6 +5,7 @@ Authorization: Bearer {{auth_token}}
 
 ### GET /api/meetings/{id}
 GET {{appAddress}}/api/meetings/1
+Authorization: Bearer {{auth_token}}
 
 
 ### POST /api/meetings
@@ -23,6 +24,7 @@ Authorization: Bearer {{auth_token}}
 ### PUT /api/meetings/{id}
 PUT {{appAddress}}/api/meetings/2
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "id": 2,
@@ -34,16 +36,20 @@ Content-Type: application/json
 
 ### DELETE /api/meetings/{id}
 DELETE {{appAddress}}/api/meetings/4
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/meetings/{id}/participants
 GET {{appAddress}}/api/meetings/1/participants
+Authorization: Bearer {{auth_token}}
 
 
 ### POST /api/meetings/{id}/participants/{login}
 POST {{appAddress}}/api/meetings/1/participants/my_user
+Authorization: Bearer {{auth_token}}
 
 
 ### DELETE /api/meetings/{id}/participants/{login}
 DELETE {{appAddress}}/api/meetings/1/participants/my_user
+Authorization: Bearer {{auth_token}}
 
