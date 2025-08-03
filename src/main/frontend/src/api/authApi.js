@@ -1,35 +1,25 @@
-export const loginRequest = async (credentials) => {
-    // TODO: use axios
-    const response = await fetch("/api/login", {
-        method: "POST",
-        headers: new Headers({
-            "Content-Type": "application/json",
-        }),
-        body: JSON.stringify(credentials),
-    });
+import api from "./apiInstance";
+import {notifyError} from "../info/notifier";
 
-    const data = await response.json();
-    if (response.ok) {
-        return data.token
-    } else {
-        // TODO: Backend need to extend AuthenticationEntryPoint and AccessDeniedHandler to make 'data.message work'
-        throw new Error(data.message || `Login failed with status code: ${response.status}`);
+// TODO: simplify JSON.stringify (axios do it for me) if I have json type header
+export const loginRequest = async (credentials) => {
+    try {
+        const response = await api.post("/login", JSON.stringify(credentials));
+        if (response.status === 200) {
+            return response.data.token;
+        } else {
+            notifyError(response.data.message || `Login failed with status code: ${response.status}`);
+        }
+    } catch (error) {
+        notifyError(`Error occurred while trying to login: ${error}`)
     }
 }
 
 export const registerRequest = async (credentials) => {
-    // TODO: use axios
-    const response = await fetch(`/api/participants`, {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(credentials),
-    });
-
-    if (response.ok) {
-        return true;
-    } else {
-        // const error = await response.json().message; // TODO: Backend need to extend AuthenticationEntryPoint and AccessDeniedHandler
-        console.error(`Register failed with status code: ${response.status}`);
+    try {
+        const response = await api.post("/participants", JSON.stringify(credentials));
+        return response.status === 201;
+    } catch (error) {
         return false;
     }
 }

@@ -12,6 +12,8 @@ export const AuthProvider = ({children}) => {
     const loginUser = async (login, password) => {
         try {
             const returnedToken = await loginRequest({login, password}) || "";
+            if (!returnedToken) return;
+
             setLoggedInUser(login);
             localStorage.setItem("bearerToken", returnedToken);
             localStorage.setItem("loggedInUser", login);
