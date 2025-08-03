@@ -50,7 +50,7 @@ const LoginForm = ({onLogin, onRegister}) => {
             <button type="button" onClick={handleLogin}>
                 {isLoading ? <ClipLoader size={16} color="#fff"/> : "Login"}
             </button>
-            <button type="button" className="button button-outline" onClick={handleRegister}>Register</button>
+            <button className="button button-outline" onClick={handleRegister}>Register</button>
         </Container>
     )
 }

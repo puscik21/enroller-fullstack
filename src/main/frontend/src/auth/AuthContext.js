@@ -1,39 +1,36 @@
-import {createContext, useContext, useState} from "react";
+import {createContext, useContext, useEffect, useState} from "react";
+import {loginRequest} from "../api/authApi";
+import {notifyError} from "../info/notifier";
+import {setupTokenExpirationInterceptor} from "../api/apiInstance";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
-    // TODO: use token for login and roles someday
-    const [token, setToken] = useState(() => localStorage.getItem("bearerToken"));
     const [loggedInUser, setLoggedInUser] = useState(() => localStorage.getItem("loggedInUser"));
 
+    // TODO: use token for login and roles someday
     const loginUser = async (login, password) => {
-        const response = await fetch("/api/login", {
-            method: "POST",
-            headers: new Headers({
-                "Content-Type": "application/json",
-            }),
-            body: JSON.stringify({login, password}),
-        });
+        try {
+            const returnedToken = await loginRequest({login, password}) || "";
+            if (!returnedToken) return;
 
-        const data = await response.json();
-        if (response.ok) {
-            setToken(data.token);
-            setLoggedInUser(login)
-            localStorage.setItem("bearerToken", data.token);
+            setLoggedInUser(login);
+            localStorage.setItem("bearerToken", returnedToken);
             localStorage.setItem("loggedInUser", login);
-        } else {
-            // TODO: Backend need to extend AuthenticationEntryPoint and AccessDeniedHandler to make 'data.message work'
-            throw new Error(data.message || `Login failed with status code: ${response.status}`);
+        } catch (err) {
+            notifyError("Could not log in");
         }
     }
 
     const logoutUser = () => {
-        setToken(null);
         setLoggedInUser(null);
         localStorage.removeItem("bearerToken");
         localStorage.removeItem("loggedInUser");
     }
+
+    useEffect(() => {
+        setupTokenExpirationInterceptor(logoutUser)
+    }, [logoutUser]);
 
     return (
         <AuthContext.Provider value={{loggedInUser, loginUser, logoutUser}}>
