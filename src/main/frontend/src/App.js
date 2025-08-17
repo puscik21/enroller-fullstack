@@ -2,41 +2,22 @@ import "milligram"
 import styled from "styled-components";
 import UserPanel from "./user/UserPanel";
 import LoginForm from "./user/LoginForm";
-import {registerRequest} from "./api/authApi";
 import {ToastContainer} from "react-toastify";
-import {notifyError, notifySuccess} from "./info/notifier";
-import {useAuth} from "./auth/AuthContext";
+import {Route, Routes} from "react-router-dom";
+import RegisterForm from "./user/RegisterForm";
+import ErrorPage from "./info/ErrorPage";
 
 const App = () => {
-    const {loggedInUser, loginUser, logoutUser} = useAuth();
-
-    // TODO: what will happen when JWT is expired
-    const onLogin = async (login, password) => {
-        try {
-            await loginUser(login, password)
-        } catch (error) {
-            notifyError("Login failed");
-        }
-    }
-
-    const onRegister = async (login, password) => {
-        if (await registerRequest({login, password})) {
-            notifySuccess(`User '${login}' registered`)
-        } else {
-            notifyError(`Error while registering user '${login}'`)
-        }
-    }
-
-    const onLogout = () => {
-        logoutUser()
-    }
-
-    const isLoggedIn = !!loggedInUser && loggedInUser !== ""
     return (
         <Container>
             <h1>Meetings enroller system</h1>
-            {isLoggedIn ? <UserPanel onLogout={onLogout}/> :
-                <LoginForm onLogin={onLogin} onRegister={onRegister}/>}
+            <Routes>
+                {/*TODO: fix default element to navigate to "/" path */}
+                <Route path="*" element={<UserPanel/>}/>
+                <Route path="/" element={<UserPanel/>} errorElement={<ErrorPage/>}/>
+                <Route path="/login" element={<LoginForm/>} errorElement={<ErrorPage/>}/>
+                <Route path="/register" element={<RegisterForm/>} errorElement={<ErrorPage/>}/>
+            </Routes>
             <ToastContainer/>
         </Container>
     );

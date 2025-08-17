@@ -5,14 +5,17 @@ Authorization: Bearer {{auth_token}}
 
 ### GET /api/participants
 GET {{appAddress}}/api/participants?sortBy=login&sortOrder=DESC
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/participants
 GET {{appAddress}}/api/participants?key=z
+Authorization: Bearer {{auth_token}}
 
 
 ### GET /api/participants/{login}
 GET {{appAddress}}/api/participants/newuser
+Authorization: Bearer {{auth_token}}
 
 
 ### POST /api/participants
@@ -28,6 +31,7 @@ Content-Type: application/json
 ### PUT /api/participants/{login}
 PUT {{appAddress}}/api/participants/newuser
 Content-Type: application/json
+Authorization: Bearer {{auth_token}}
 
 {
   "login": "newuser",
@@ -37,3 +41,4 @@ Content-Type: application/json
 
 ### DELETE /api/participants/{login}
 DELETE {{appAddress}}/api/participants/newuser
+Authorization: Bearer {{auth_token}}
