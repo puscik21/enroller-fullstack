@@ -1,6 +1,7 @@
 import {useState} from "react";
 import styled from "styled-components";
 import {ClipLoader} from "react-spinners";
+import {Link} from "react-router-dom";
 
 const LoginForm = ({onLogin, onRegister}) => {
     const [login, setLogin] = useState("");
@@ -19,10 +20,6 @@ const LoginForm = ({onLogin, onRegister}) => {
         }
     };
 
-    const handleRegister = () => {
-        if (areCredentialsFilled()) onRegister(login, password);
-    };
-
     const areCredentialsFilled = () => {
         if (!login || !password) {
             setError("Fill credentials");
@@ -34,6 +31,7 @@ const LoginForm = ({onLogin, onRegister}) => {
 
     return (
         <Container>
+            <h2>Login</h2>
             {error && <ErrorLabel aria-live={"polite"}>{error}</ErrorLabel>}
             <label>Login</label>
             <input
@@ -50,17 +48,19 @@ const LoginForm = ({onLogin, onRegister}) => {
             <button type="button" onClick={handleLogin}>
                 {isLoading ? <ClipLoader size={16} color="#fff"/> : "Login"}
             </button>
-            <button className="button button-outline" onClick={handleRegister}>Register</button>
+            <RegisterLink>
+                Don't have an account? <Link to="/register">Register here</Link>
+            </RegisterLink>
         </Container>
-    )
+    );
 }
+
+export default LoginForm;
 
 const ErrorLabel = styled.span`
     color: #af1313;
     font-size: 2rem;
 `
-
-export default LoginForm;
 
 const Container = styled.div`
     width: 50%;
@@ -74,4 +74,9 @@ const Container = styled.div`
     gap: 12px;
     min-width: 320px;
     max-width: 500px;
+`;
+
+const RegisterLink = styled.p`
+    text-align: center;
+    margin-top: 1rem;
 `;
