@@ -3,7 +3,7 @@ import styled from "styled-components";
 import {ClipLoader} from "react-spinners";
 import {Link} from "react-router-dom";
 
-const LoginForm = ({onLogin, onRegister}) => {
+const LoginForm = ({onLogin}) => {
     const [login, setLogin] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");

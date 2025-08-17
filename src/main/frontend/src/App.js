@@ -8,6 +8,7 @@ import {notifyError, notifySuccess} from "./info/notifier";
 import {useAuth} from "./auth/AuthContext";
 import {Route, Routes, useNavigate} from "react-router-dom";
 import RegisterForm from "./user/RegisterForm";
+import ErrorPage from "./info/ErrorPage";
 
 const App = () => {
     const {loginUser} = useAuth();
@@ -38,9 +39,11 @@ const App = () => {
         <Container>
             <h1>Meetings enroller system</h1>
             <Routes>
-                <Route path="/" element={<UserPanel/>}/>
-                <Route path="/login" element={<LoginForm onLogin={onLogin}/>}/>
-                <Route path="/register" element={<RegisterForm onRegister={onRegister}/>}/>
+                {/*TODO: fix default element to navigate to "/" path */}
+                <Route path="*" element={<UserPanel/>}/>
+                <Route path="/" element={<UserPanel/>} errorElement={<ErrorPage/>}/>
+                <Route path="/login" element={<LoginForm onLogin={onLogin}/>} errorElement={<ErrorPage/>}/>
+                <Route path="/register" element={<RegisterForm onRegister={onRegister}/>} errorElement={<ErrorPage/>}/>
             </Routes>
             <ToastContainer/>
         </Container>
