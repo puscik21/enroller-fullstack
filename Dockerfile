@@ -1,10 +1,10 @@
 FROM node:22-alpine AS frontend
 WORKDIR /app/frontend
 
-COPY src/frontend/package*.json ./
+COPY src/main/frontend/package*.json ./
 RUN npm install
 
-COPY src/frontend/ ./
+COPY src/main/frontend/ ./
 RUN npm run build
 
 
