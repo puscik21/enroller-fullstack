@@ -2,3 +2,19 @@ jwt:
   secret: "ThisIsNotSoSecretSoChangeIt"
   issuer: "https://myenrollerdemo"
   token_expiration_in_seconds: 3600 #TODO: try with 10min + refresh token
+
+spring:
+  datasource:
+    url: jdbc:sqlite:enroller.db
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+  jpa:
+#    database-platform: com.company.enroller.persistence.SQLiteDialect
+    database-platform: org.hibernate.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
