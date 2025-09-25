@@ -1,10 +1,10 @@
 package com.company.enroller.controller;
 
 import com.company.enroller.controller.utils.ControllerUtils;
-import com.company.enroller.controller.utils.SortOrder;
 import com.company.enroller.model.Participant;
 import com.company.enroller.persistence.ParticipantService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class ParticipantRestController {
         if (!ALLOWED_SORT_BY_FIELDS.contains(sortBy)) {
             throw new IllegalArgumentException("Invalid sortBy " + sortBy);
         }
-        return participantService.getAll(key, sortBy, SortOrder.valueOf(sortOrder));
+        return participantService.getAll(key, sortBy, Sort.Direction.valueOf(sortOrder));
     }
 
     @GetMapping("/{login}")
