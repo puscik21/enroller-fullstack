@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,44 +21,32 @@ import org.springframework.security.web.SecurityFilterChain;
 public class WebSecurity {
 
     private final JwtProperties jwtProperties;
-    // Wstrzykujemy AuthenticationConfiguration, aby bezpiecznie pobrać AuthenticationManager
     private final AuthenticationConfiguration authenticationConfiguration;
-
-    // Ten bean jest już niepotrzebny, jeśli używamy AuthenticationConfiguration
-    // private final ParticipantProvider participantProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Pobieramy AuthenticationManager w bezpieczny sposób
         AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
+
+        // Tworzymy instancję naszego filtra do logowania
+        JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authManager, jwtProperties);
+        // Upewniamy się, że Spring wie, który URL obsługuje ten filtr (chociaż jest to już w konstruktorze)
+        authenticationFilter.setFilterProcessesUrl("/api/login");
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Tworzymy filtry tutaj, przekazując im authManager.
-                // To przerywa cykl zależności beanów.
-                .addFilter(new JWTAuthenticationFilter(authManager, jwtProperties))
-                .addFilter(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()))
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(HttpMethod.POST, "/api/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/participants").permitAll()
+                        // Ważne: Zmieniamy requestMatchers, aby uwzględnić POST dla /api/participants
+                        .requestMatchers(HttpMethod.POST, "/api/login", "/api/participants").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                // Krok 1: Zastępujemy standardowy filtr logowania naszym własnym.
+                .addFilter(authenticationFilter)
+
+                // Krok 2: Dodajemy nasz filtr do sprawdzania tokenów PRZED standardową obsługą logowania.
+                // Dzięki temu dla każdego żądania (innego niż /api/login) najpierw sprawdzimy token JWT.
+                .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
-    // Ten bean jest teraz zbędny, ponieważ pobieramy AuthenticationManager
-    // bezpośrednio z AuthenticationConfiguration w metodzie powyżej.
-    // @Bean
-    // public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-    //     return config.getAuthenticationManager();
-    // }
-
-    // Ten bean również jest zbędny. Spring Security automatycznie znajdzie
-    // Twój ParticipantProvider, ponieważ jest to bean typu @Service.
-    // @Bean
-    // public UserDetailsService userDetailsService() {
-    //     return participantProvider;
-    // }
 }
