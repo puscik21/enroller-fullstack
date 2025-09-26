@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationManager authenticationManager;
@@ -56,7 +57,8 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 .withExpiresAt(convertToDate(now.plusSeconds(jwtProperties.getTokenExpirationInSeconds())))
                 .withClaim("role", "participant") // TODO: roles object
                 .sign(Algorithm.HMAC256(jwtProperties.getSecret()));
-        response.getWriter().write(String.format("{\"token\":\"%s\"}", token)); // TODO: better token object
+        response.setContentType("application/json");
+        new ObjectMapper().writeValue(response.getWriter(), Map.of("token", token));
     }
 
     private static Date convertToDate(LocalDateTime now) {
