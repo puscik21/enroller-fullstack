@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtProperties jwtProperties;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
+    public JWTLoginFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
         super(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/api/login"));
         this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;

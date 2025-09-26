@@ -35,7 +35,7 @@ public class WebSecurity {
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAt(new JWTAuthenticationFilter(authManager, jwtProperties), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new JWTLoginFilter(authManager, jwtProperties), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }
