@@ -30,13 +30,13 @@ public class ParticipantRestController {
     private static final Set<String> ALLOWED_SORT_BY_FIELDS = Set.of("login");
 
     @GetMapping
-    public List<Participant> getParticipants(@RequestParam(required = false) String key,
-                                             @RequestParam(defaultValue = "login") String sortBy,
-                                             @RequestParam(defaultValue = "ASC") String sortOrder) {
+    public List<Participant> findParticipants(@RequestParam(required = false) String key,
+                                              @RequestParam(defaultValue = "login") String sortBy,
+                                              @RequestParam(defaultValue = "ASC") String sortOrder) {
         if (!ALLOWED_SORT_BY_FIELDS.contains(sortBy)) {
             throw new IllegalArgumentException("Invalid sortBy " + sortBy);
         }
-        return participantService.getAll(key, sortBy, Sort.Direction.valueOf(sortOrder));
+        return participantService.findAll(key, sortBy, Sort.Direction.valueOf(sortOrder));
     }
 
     @GetMapping("/{login}")

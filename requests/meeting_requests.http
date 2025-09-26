@@ -30,7 +30,7 @@ Authorization: Bearer {{auth_token}}
   "id": 2,
   "title": "Daily",
   "description": "Daily meeting",
-  "date": "20-05-2025"
+  "date": "2025-05-20"
 }
 
 

@@ -27,25 +27,23 @@ public class WebSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
 
-        // Tworzymy instancję naszego filtra do logowania
         JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authManager, jwtProperties);
-        // Upewniamy się, że Spring wie, który URL obsługuje ten filtr (chociaż jest to już w konstruktorze)
-        authenticationFilter.setFilterProcessesUrl("/api/login");
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                        // Ważne: Zmieniamy requestMatchers, aby uwzględnić POST dla /api/participants
                         .requestMatchers(HttpMethod.POST, "/api/login", "/api/participants").permitAll()
                         .anyRequest().authenticated()
                 )
-                // Krok 1: Zastępujemy standardowy filtr logowania naszym własnym.
-                .addFilter(authenticationFilter)
+                // KROK 1: Dodajemy filtr autoryzacji PRZED standardowym filtrem logowania.
+                // Będzie on sprawdzał token JWT przy każdym żądaniu (poza tymi z permitAll).
+                .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class)
 
-                // Krok 2: Dodajemy nasz filtr do sprawdzania tokenów PRZED standardową obsługą logowania.
-                // Dzięki temu dla każdego żądania (innego niż /api/login) najpierw sprawdzimy token JWT.
-                .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class);
+                // KROK 2: Zastępujemy standardowy filtr naszym własnym, używając addFilterAt.
+                // Mówimy Springowi: "W miejscu, gdzie normalnie byłby UsernamePasswordAuthenticationFilter,
+                // wstaw mój JWTAuthenticationFilter". To jest najbardziej jawne polecenie.
+                .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

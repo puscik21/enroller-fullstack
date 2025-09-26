@@ -20,7 +20,7 @@ public class ParticipantService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
-    public List<Participant> getAll(String filter, String sortBy, Sort.Direction sortOrder) {
+    public List<Participant> findAll(String filter, String sortBy, Sort.Direction sortOrder) {
         Sort sort = Sort.by(sortOrder, sortBy);
         if (StringUtils.hasText(filter)) {
             participantRepository.findAllByLoginContainingIgnoreCase(filter, sort);

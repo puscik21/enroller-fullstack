@@ -8,6 +8,7 @@ import com.company.enroller.exception.RemovalOfMeetingsWithParticipantsException
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ public class MeetingService {
     private final ParticipantService participantService;
     private final MeetingRepository meetingRepository;
 
-    @Transactional(readOnly = true) // TODO: Do I need this?
+    @Transactional(readOnly = true)
     public List<Meeting> getAll() {
         return meetingRepository.findAll();
     }
@@ -32,36 +33,27 @@ public class MeetingService {
                 .orElseThrow(() -> new ObjectNotFoundException("Meeting with id '%d' not found".formatted(id)));
     }
 
-    public List<Meeting> findMeetings(String title, String description, String participantLogin, String sortMode) {
+    public List<Meeting> findMeetings(String title, String description, String participantLogin, String sortBy, Sort.Direction sortOrder) {
         Specification<Meeting> spec = Specification.where(null);
 
         if (!title.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.like(root.get("title"), "%" + title + "%"));
+            spec = spec.and((root, query, cb) ->
+                    cb.like(root.get("title"), "%" + title + "%"));
         }
         if (!description.isEmpty()) {
-            spec = spec.and((root, query, cb) -> cb.like(root.get("description"), "%" + description + "%"));
+            spec = spec.and((root, query, cb) ->
+                    cb.like(root.get("description"), "%" + description + "%"));
         }
         if (!participantLogin.isEmpty()) {
             Participant participant = participantService.getByLogin(participantLogin);
-            spec = spec.and((root, query, cb) -> cb.isMember(participant, root.get("participant")));
+            spec = spec.and((root, query, cb) ->
+                    cb.isMember(participant, root.get("participant")));
         }
-        return meetingRepository.findAll(spec); // TODO: Add sort
+        Sort sort = Sort.by(sortOrder, sortBy);
+        return meetingRepository.findAll(spec, sort);
+//        return meetingRepository.findAll(spec);
+//        return meetingRepository.findAll();
     }
-
-//    public List<Meeting> findMeetingsOld(String title, String description, String participantLogin, String sortMode) {
-//        Optional<Participant> participant = participantService.findByLogin(participantLogin);
-//        String hql = "FROM Meeting as meeting WHERE title LIKE :title AND description LIKE :description ";
-//        if (participant.isPresent()) {
-//            hql += " AND :participant in elements(participants)";
-//        }
-//        if (sortMode.equals("title")) {
-//            hql += " ORDER BY title";
-//        }
-//        Query<Meeting> query = dbSession.createQuery(hql, Meeting.class);
-//        query.setParameter("title", "%" + title + "%").setParameter("description", "%" + description + "%");
-//        participant.ifPresent(value -> query.setParameter("participant", value));
-//        return query.list();
-//    }
 
     @Transactional
     public Meeting add(Meeting meeting) {

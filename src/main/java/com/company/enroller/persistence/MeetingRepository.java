@@ -9,8 +9,6 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-//public interface MeetingRepository extends JpaRepository<Meeting, Long> {
-// TODO: what does JpaSpecificationExecutor do?
 public interface MeetingRepository extends JpaRepository<Meeting, Long>, JpaSpecificationExecutor<Meeting> {
 
     Optional<Meeting> findByTitleAndDate(String title, LocalDate date);
