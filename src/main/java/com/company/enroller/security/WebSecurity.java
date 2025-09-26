@@ -32,6 +32,8 @@ public class WebSecurity {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, "/api/login", "/api/participants").permitAll()
+                        .requestMatchers("/", "/login", "register").permitAll()
+                        .requestMatchers("/index.html", "/static/**", "/*.png", "/*.ico", "/*.json").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class)
