@@ -7,7 +7,8 @@ const NewMeetingForm = ({onSubmit}) => {
     const submit = (event) => {
         event.preventDefault();
         if (title !== "") {
-            onSubmit({title, description, participants: []})
+            const todayFormatted = new Date().toISOString().split('T')[0]
+            onSubmit({title, description, date: todayFormatted})
         }
     }
 

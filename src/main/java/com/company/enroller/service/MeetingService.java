@@ -52,8 +52,6 @@ public class MeetingService {
         }
         Sort sort = Sort.by(sortOrder, sortBy);
         return meetingRepository.findAll(spec, sort);
-//        return meetingRepository.findAll(spec);
-//        return meetingRepository.findAll();
     }
 
     @Transactional
@@ -62,6 +60,7 @@ public class MeetingService {
                 .ifPresent(m -> {
                     throw new MeetingAlreadyExistsException(m.getTitle());
                 });
+        meeting.setId(null);
         return meetingRepository.save(meeting);
     }
 
