@@ -27,8 +27,6 @@ public class WebSecurity {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         AuthenticationManager authManager = authenticationConfiguration.getAuthenticationManager();
 
-        JWTAuthenticationFilter authenticationFilter = new JWTAuthenticationFilter(authManager, jwtProperties);
-
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -36,15 +34,8 @@ public class WebSecurity {
                         .requestMatchers(HttpMethod.POST, "/api/login", "/api/participants").permitAll()
                         .anyRequest().authenticated()
                 )
-                // KROK 1: Dodajemy filtr autoryzacji PRZED standardowym filtrem logowania.
-                // Będzie on sprawdzał token JWT przy każdym żądaniu (poza tymi z permitAll).
                 .addFilterBefore(new JWTAuthorizationFilter(authManager, jwtProperties.getSecret()), UsernamePasswordAuthenticationFilter.class)
-
-                // KROK 2: Zastępujemy standardowy filtr naszym własnym, używając addFilterAt.
-                // Mówimy Springowi: "W miejscu, gdzie normalnie byłby UsernamePasswordAuthenticationFilter,
-                // wstaw mój JWTAuthenticationFilter". To jest najbardziej jawne polecenie.
-                .addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterAt(new JWTAuthenticationFilter(authManager, jwtProperties), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

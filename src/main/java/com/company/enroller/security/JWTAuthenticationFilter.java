@@ -4,6 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.company.enroller.model.Participant;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,12 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,7 +29,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
     private final JwtProperties jwtProperties;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
-        super(new AntPathRequestMatcher("/api/login", HttpMethod.POST.name()));
+        super(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/api/login"));
         this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;
     }
