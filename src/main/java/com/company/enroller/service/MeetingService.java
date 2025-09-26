@@ -1,4 +1,4 @@
-package com.company.enroller.persistence;
+package com.company.enroller.service;
 
 import com.company.enroller.exception.MeetingAlreadyExistsException;
 import com.company.enroller.exception.ObjectNotFoundException;
@@ -7,6 +7,7 @@ import com.company.enroller.exception.ParticipantNotFoundInMeetingException;
 import com.company.enroller.exception.RemovalOfMeetingsWithParticipantsException;
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
+import com.company.enroller.repository.MeetingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;

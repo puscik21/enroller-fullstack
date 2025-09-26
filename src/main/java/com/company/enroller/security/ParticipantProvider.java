@@ -1,7 +1,7 @@
 package com.company.enroller.security;
 
 import com.company.enroller.model.Participant;
-import com.company.enroller.persistence.ParticipantService;
+import com.company.enroller.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

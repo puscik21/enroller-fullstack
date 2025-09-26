@@ -2,7 +2,7 @@ package com.company.enroller.controller;
 
 import com.company.enroller.controller.utils.ControllerUtils;
 import com.company.enroller.model.Participant;
-import com.company.enroller.persistence.ParticipantService;
+import com.company.enroller.service.ParticipantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;

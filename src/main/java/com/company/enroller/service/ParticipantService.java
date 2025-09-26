@@ -1,8 +1,9 @@
-package com.company.enroller.persistence;
+package com.company.enroller.service;
 
 import com.company.enroller.exception.ObjectNotFoundException;
 import com.company.enroller.exception.ParticipantAlreadyExistsException;
 import com.company.enroller.model.Participant;
+import com.company.enroller.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;

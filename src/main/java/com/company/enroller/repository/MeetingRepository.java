@@ -1,4 +1,4 @@
-package com.company.enroller.persistence;
+package com.company.enroller.repository;
 
 import com.company.enroller.model.Meeting;
 import org.springframework.data.jpa.repository.JpaRepository;
