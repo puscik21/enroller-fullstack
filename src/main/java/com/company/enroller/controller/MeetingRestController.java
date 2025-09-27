@@ -3,8 +3,9 @@ package com.company.enroller.controller;
 import com.company.enroller.controller.utils.ControllerUtils;
 import com.company.enroller.model.Meeting;
 import com.company.enroller.model.Participant;
-import com.company.enroller.persistence.MeetingService;
+import com.company.enroller.service.MeetingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,9 +31,10 @@ public class MeetingRestController {
     @GetMapping
     public List<Meeting> findMeetings(@RequestParam(value = "title", defaultValue = "") String title,
                                       @RequestParam(value = "description", defaultValue = "") String description,
-                                      @RequestParam(value = "sort", defaultValue = "") String sortMode,
-                                      @RequestParam(value = "participantLogin", defaultValue = "") String participantLogin) {
-        return meetingService.findMeetings(title, description, participantLogin, sortMode);
+                                      @RequestParam(value = "sortBy", defaultValue = "title") String sortBy,
+                                      @RequestParam(value = "participantLogin", defaultValue = "") String participantLogin,
+                                      @RequestParam(defaultValue = "ASC") String sortOrder) {
+        return meetingService.findMeetings(title, description, participantLogin, sortBy, Sort.Direction.valueOf(sortOrder));
     }
 
     @GetMapping("/{id}")

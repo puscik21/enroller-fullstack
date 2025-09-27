@@ -2,3 +2,20 @@ jwt:
   secret: "ThisIsNotSoSecretSoChangeIt"
   issuer: "https://myenrollerdemo"
   token_expiration_in_seconds: 3600 #TODO: try with 10min + refresh token
+
+spring:
+  datasource:
+    url: jdbc:sqlite:enroller.db?busy_timeout=5000 # wait 5s if DB is locked
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+  jpa:
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        connection:
+          url: ${spring.datasource.url}&journal_mode=WAL # allows simultaneous reads and writes in the DB

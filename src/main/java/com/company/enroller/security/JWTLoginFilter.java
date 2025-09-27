@@ -4,6 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.company.enroller.model.Participant;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,24 +16,21 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
-public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtProperties jwtProperties;
 
-    public JWTAuthenticationFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
-        super(new AntPathRequestMatcher("/api/login", HttpMethod.POST.name()));
+    public JWTLoginFilter(AuthenticationManager authenticationManager, JwtProperties jwtProperties) {
+        super(RegexRequestMatcher.regexMatcher(HttpMethod.POST, "/api/login"));
         this.authenticationManager = authenticationManager;
         this.jwtProperties = jwtProperties;
     }
@@ -56,7 +57,8 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
                 .withExpiresAt(convertToDate(now.plusSeconds(jwtProperties.getTokenExpirationInSeconds())))
                 .withClaim("role", "participant") // TODO: roles object
                 .sign(Algorithm.HMAC256(jwtProperties.getSecret()));
-        response.getWriter().write(String.format("{\"token\":\"%s\"}", token)); // TODO: better token object
+        response.setContentType("application/json");
+        new ObjectMapper().writeValue(response.getWriter(), Map.of("token", token));
     }
 
     private static Date convertToDate(LocalDateTime now) {
